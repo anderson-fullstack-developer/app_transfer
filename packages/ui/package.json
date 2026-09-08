@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     "./lib/cn": "./src/lib/cn.ts",
+    "./components": "./src/components/index.ts",
     "./styles/globals.css": "./src/styles/globals.css"
   },
   "scripts": {

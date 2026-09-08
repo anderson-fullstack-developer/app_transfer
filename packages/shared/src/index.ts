@@ -9,3 +9,4 @@ export * from './money/index.js';
 export * from './username/index.js';
 export * from './transfer/index.js';
 export * from './reference/index.js';
+export * from './contracts/index.js';
