@@ -85,6 +85,11 @@ enum NotificationChannel {
   WHATSAPP
 }
 
+enum VerificationTokenType {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+}
+
 // --- Identidade -------------------------------------------------------------
 
 model User {
@@ -98,16 +103,62 @@ model User {
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
 
-  studentProfile   StudentProfile?
-  senderProfile    SenderProfile?
-  notifications    Notification[]
-  auditLogs        AuditLog[]        @relation("AuditLogActor")
-  kycVerifications KycVerification[]
-  idempotencyKeys  IdempotencyKey[]
+  studentProfile     StudentProfile?
+  senderProfile      SenderProfile?
+  notifications      Notification[]
+  auditLogs          AuditLog[]          @relation("AuditLogActor")
+  kycVerifications   KycVerification[]
+  idempotencyKeys    IdempotencyKey[]
+  refreshTokens      RefreshToken[]
+  verificationTokens VerificationToken[]
 
   @@index([role])
   @@index([status])
   @@map("users")
+}
+
+// --- Sessoes / tokens de autenticacao ---------------------------------------
+
+/// Um refresh token emitido a um utilizador. Guardamos apenas o hash SHA-256.
+/// Rotacao: ao usar um refresh token, e revogado e substituido por outro da
+/// mesma `familyId`. Se um token ja revogado for reutilizado, revoga-se a
+/// familia toda (deteccao de roubo de token).
+model RefreshToken {
+  id           String    @id @default(uuid()) @db.Uuid
+  userId       String    @db.Uuid
+  tokenHash    String    @unique
+  familyId     String    @db.Uuid
+  expiresAt    DateTime
+  revokedAt    DateTime?
+  replacedById String?   @db.Uuid
+  userAgent    String?
+  ip           String?
+  createdAt    DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([familyId])
+  @@index([expiresAt])
+  @@map("refresh_tokens")
+}
+
+/// Tokens de uso unico para verificacao de email e reset de password.
+/// Guardamos apenas o hash; o valor cru vai no link enviado por email.
+model VerificationToken {
+  id         String                @id @default(uuid()) @db.Uuid
+  userId     String                @db.Uuid
+  type       VerificationTokenType
+  tokenHash  String                @unique
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime              @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, type])
+  @@index([expiresAt])
+  @@map("verification_tokens")
 }
 
 model StudentProfile {

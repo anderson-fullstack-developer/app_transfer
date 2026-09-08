@@ -34,15 +34,30 @@ Em produção nunca são enviadas stack traces.
 GET /api/v1/health
 ```
 
-### Auth (Fase 3)
+### Auth — implementado (Fase 3)
 
 ```
-POST /api/v1/auth/register
-POST /api/v1/auth/login
+POST /api/v1/auth/register             { email, password, accountType: STUDENT|SENDER }
+POST /api/v1/auth/login                { email, password }
+POST /api/v1/auth/refresh              (usa o cookie refresh_token)
 POST /api/v1/auth/logout
-POST /api/v1/auth/refresh
-GET  /api/v1/auth/me
+GET  /api/v1/auth/me                   (Bearer)
+POST /api/v1/auth/verify-email         { token }
+POST /api/v1/auth/resend-verification  (Bearer)
+POST /api/v1/auth/forgot-password      { email }        -> 202 sempre (anti-enumeração)
+POST /api/v1/auth/reset-password       { token, password }
 ```
+
+**Modelo de tokens:**
+
+- `accessToken` (JWT, ~15 min) devolvido no corpo — guardar em memória, **nunca** em `localStorage`.
+- `refresh_token` em cookie `httpOnly` + `sameSite=lax` + `secure` (produção),
+  `path=/api/v1/auth`. Rotativo: cada `refresh` revoga o anterior. Reutilizar um
+  refresh token já revogado revoga a família toda (deteção de roubo) → `SESSION_EXPIRED`.
+- `role` nunca é aceite do cliente. `accountType` só permite `STUDENT`/`SENDER`.
+
+**Proteção:** rate limiting em `login` (10/min), `register` / `forgot-password` /
+`reset-password` (5/min). `USER_REGISTERED` e `USER_LOGIN` gravados no audit log.
 
 ### Students (Fases 4–5)
 

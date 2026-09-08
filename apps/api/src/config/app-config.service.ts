@@ -41,4 +41,30 @@ export class AppConfigService {
   get devEndpointsEnabled(): boolean {
     return this.env.ENABLE_DEV_ENDPOINTS;
   }
+
+  get jwt(): {
+    accessSecret: string;
+    refreshSecret: string;
+    accessTtlSeconds: number;
+    refreshTtlSeconds: number;
+  } {
+    return {
+      accessSecret: this.env.JWT_ACCESS_SECRET,
+      refreshSecret: this.env.JWT_REFRESH_SECRET,
+      accessTtlSeconds: this.env.JWT_ACCESS_TTL,
+      refreshTtlSeconds: this.env.JWT_REFRESH_TTL,
+    };
+  }
+
+  get cookie(): { domain: string; secure: boolean } {
+    return { domain: this.env.COOKIE_DOMAIN, secure: this.env.COOKIE_SECURE };
+  }
+
+  get webUrl(): string {
+    return this.env.WEB_URL;
+  }
+
+  get emailFrom(): string {
+    return this.env.EMAIL_FROM;
+  }
 }
