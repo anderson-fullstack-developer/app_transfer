@@ -1,0 +1,91 @@
+// =============================================================================
+// app-transfer — schema Prisma
+//
+// FASE 1: apenas fundacoes (datasource, generator, enums, User).
+// FASE 2 expande com StudentProfile, SenderProfile, Quote, Transfer,
+//        TransferEvent, PaymentAttempt, FavoriteBeneficiary, KycVerification,
+//        Notification, AuditLog, IdempotencyKey + a primeira migration.
+//
+// Regras (doc, seccoes 12 e 28):
+//   - valores monetarios em minor units inteiros (BigInt), nunca Float;
+//   - taxas de cambio como Decimal;
+//   - sem soft delete em entidades financeiras;
+//   - unique index em StudentProfile.usernameNormalized.
+// =============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  STUDENT
+  SENDER
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  DELETED
+}
+
+enum KycStatus {
+  NOT_STARTED
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum QuoteStatus {
+  ACTIVE
+  EXPIRED
+  CONSUMED
+}
+
+enum TransferStatus {
+  DRAFT
+  AWAITING_PAYMENT
+  PAYMENT_PROCESSING
+  PAID
+  PROCESSING
+  SENT_TO_PROVIDER
+  DELIVERED
+  FAILED
+  CANCELLED
+  REFUNDED
+}
+
+enum TransferEventType {
+  CREATED
+  STATUS_CHANGED
+  PROVIDER_UPDATE
+  PAYMENT_ATTEMPT
+  NOTE
+}
+
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+  PUSH
+  SMS
+  WHATSAPP
+}
+
+model User {
+  id            String     @id @default(uuid()) @db.Uuid
+  email         String     @unique
+  passwordHash  String
+  role          UserRole
+  status        UserStatus @default(ACTIVE)
+  emailVerified Boolean    @default(false)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@index([role])
+  @@map("users")
+}
