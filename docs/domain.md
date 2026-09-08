@@ -45,8 +45,22 @@ O schema Prisma espelha estes valores.
 - Arredondamento: fee **para cima** (nunca cobramos a menos), montante do
   destinatário **para baixo** (nunca prometemos a mais). Documentado no código.
 
-## Entidades (modelo de dados completo na Fase 2)
+## Entidades
+
+Schema completo em
+[`packages/database/prisma/schema.prisma`](../packages/database/prisma/schema.prisma).
 
 `User` · `StudentProfile` · `SenderProfile` · `Quote` · `Transfer` ·
 `TransferEvent` · `PaymentAttempt` · `FavoriteBeneficiary` · `KycVerification` ·
 `Notification` · `AuditLog` · `IdempotencyKey`
+
+Notas de modelação:
+
+- **Dinheiro**: colunas `*AmountMinor` são `BigInt`; `exchangeRate` é `Decimal(18, 8)`.
+- **`Quote` e `Transfer` referenciam `SenderProfile` e `StudentProfile`** (não
+  `User`) — a FK garante a invariante #2 (não se envia para estudante inexistente).
+  `onDelete: Restrict` nessas relações: não se apaga um perfil com transferências.
+- **`Transfer.quoteId` é único** — uma quote consome-se numa única transferência.
+- **`TransferEvent` e `AuditLog`**: só `createdAt`, sem `updatedAt` — append-only.
+- **`IdempotencyKey`**: `@@unique([key, scope])`.
+- Nomes de tabela em snake_case (`@@map`).

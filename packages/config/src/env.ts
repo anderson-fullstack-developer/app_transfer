@@ -29,6 +29,8 @@ export const apiEnvSchema = z.object({
     ),
 
   DATABASE_URL: z.string().url(),
+  /** Ligacao direta (sem pooler) para migrations. Opcional; default = DATABASE_URL. */
+  DIRECT_URL: z.string().url().optional(),
   REDIS_URL: z.string().url(),
 
   JWT_ACCESS_SECRET: z.string().min(16, 'JWT_ACCESS_SECRET tem de ter pelo menos 16 caracteres'),

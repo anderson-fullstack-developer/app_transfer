@@ -21,7 +21,7 @@ separar serviços no futuro. Princípios: Clean Architecture onde faz sentido,
 SOLID, separation of concerns, dependency inversion, repository/service/provider
 patterns, idempotência e auditabilidade.
 
-```
+```text
 /apps
   /web    Next.js (App Router) + Tailwind + shadcn/ui + React Hook Form + Zod + TanStack Query
   /api    NestJS + REST + Swagger + Prisma + PostgreSQL
@@ -52,18 +52,37 @@ Detalhe em [`docs/architecture.md`](docs/architecture.md).
 
 - Node.js >= 20 (recomendado 22 — ver `.nvmrc`)
 - pnpm >= 9 (`npm i -g pnpm`)
-- Docker Desktop (para PostgreSQL + Redis)
+- Uma base de dados PostgreSQL — **[Neon](https://neon.tech)** (cloud, grátis) ou
+  Docker local (`docker compose up -d`)
 
 ## Instalação
 
 ```bash
 pnpm install
-cp .env.example .env        # valores de dev já preenchidos
-docker compose up -d        # PostgreSQL + Redis
-pnpm db:migrate             # aplica migrations   (Fase 2)
-pnpm db:seed                # dados de exemplo    (Fase 2)
-pnpm dev                    # web + api em paralelo
+cp .env.example .env    # depois edita DATABASE_URL / DIRECT_URL (ver abaixo)
+pnpm db:migrate         # cria as tabelas
+pnpm db:seed            # cria as contas de exemplo
+pnpm dev                # web + api em paralelo
 ```
+
+### Base de dados
+
+- **Neon:** cria um projeto, copia a connection string para `DATABASE_URL`
+  (a _pooled_) e para `DIRECT_URL` a ligação direta (o mesmo host sem `-pooler`).
+- **Docker:** `docker compose up -d` e usa
+  `postgresql://app:app@localhost:5432/app_transfer` nas duas variáveis.
+
+> No Windows, pára o `pnpm dev` antes de correr `pnpm db:migrate` / `db:generate`
+> — o processo da API mantém o motor do Prisma aberto e o `generate` falha com `EPERM`.
+
+### Contas de exemplo (só desenvolvimento)
+
+| Email                  | Password        | Papel                          |
+| ---------------------- | --------------- | ------------------------------ |
+| `admin@example.test`   | `Admin!12345`   | ADMIN                          |
+| `sender@example.test`  | `Sender!12345`  | SENDER (Maria)                 |
+| `student@example.test` | `Student!12345` | STUDENT · `@carlos` (Rabat)    |
+| `joao@example.test`    | `Student!12345` | STUDENT · `@joao` (Casablanca) |
 
 - Web: <http://localhost:3000>
 - API: <http://localhost:4000/api/v1>
@@ -107,8 +126,8 @@ módulos e as regras de dependência entre camadas.
 
 | Fase | Descrição                                                          | Estado |
 | ---- | ------------------------------------------------------------------ | ------ |
-| 1    | Monorepo + configuração + Docker + base partilhada                 | ✅     |
-| 2    | Prisma schema + migrations + seeds                                 | ⏳     |
+| 1    | Monorepo + configuração + base partilhada                          | ✅     |
+| 2    | Prisma schema + migrations + seeds                                 | ✅     |
 | 3    | Auth + roles + segurança base                                      | ⏳     |
 | 4–13 | Onboarding, quotes, transfers, dashboards, admin, testes, docs, CI | ⏳     |
 

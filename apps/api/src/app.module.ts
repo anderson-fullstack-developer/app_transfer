@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
 import { AppConfigModule } from './config/app-config.module';
+import { DatabaseModule } from './database/database.module';
 import { AllExceptionsFilter } from './common/http/all-exceptions.filter';
 import { HealthModule } from './health/health.module';
 
@@ -9,7 +10,7 @@ import { HealthModule } from './health/health.module';
  * modulo proprio com fronteiras claras — Modular Monolith (seccao 2 da doc).
  */
 @Module({
-  imports: [AppConfigModule, HealthModule],
+  imports: [AppConfigModule, DatabaseModule, HealthModule],
   providers: [{ provide: APP_FILTER, useClass: AllExceptionsFilter }],
 })
 export class AppModule {}

@@ -10,6 +10,11 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
+    },
+    "./password": {
+      "types": "./dist/password/index.d.ts",
+      "import": "./dist/password/index.js",
+      "require": "./dist/password/index.cjs"
     }
   },
   "files": [
@@ -31,6 +36,7 @@
   "devDependencies": {
     "@app/eslint-config": "workspace:*",
     "@app/typescript-config": "workspace:*",
+    "@types/node": "^22.10.5",
     "eslint": "^9.17.0",
     "rimraf": "^6.0.1",
     "tsup": "^8.3.5",

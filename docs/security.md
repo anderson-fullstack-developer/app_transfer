@@ -4,7 +4,14 @@ Decisões e mecanismos (secção 23 da doc). Atualizar à medida que se implemen
 
 ## Autenticação
 
-- Passwords com hashing forte (Argon2id ou bcrypt cost >= 12) — **nunca** em texto.
+- Passwords com hashing forte via **scrypt** (`node:crypto`, sem dependências
+  nativas) — parâmetros N=16384, r=8, p=1, guardados no próprio hash para
+  permitir aumentar o custo no futuro. scrypt é recomendado pela OWASP para
+  armazenamento de passwords. Implementação em `@app/shared/password`
+  (`hashPassword` / `verifyPassword` / `passwordNeedsRehash`). **Nunca** texto simples.
+  Decisão: scrypt em vez de Argon2id para evitar um módulo nativo no monorepo;
+  o formato do hash é versionado, portanto migrar para Argon2 mais tarde é
+  transparente para hashes existentes.
 - Proteção contra brute force: rate limiting no `/auth/login` + backoff.
 - Tokens:
   - access token curto (`JWT_ACCESS_TTL`, default 15 min);
