@@ -9,6 +9,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { AppConfigService } from './config/app-config.service';
+import { requestIdMiddleware } from './common/http/request-id.middleware';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, { bufferLogs: false });
@@ -17,6 +18,7 @@ async function bootstrap(): Promise<void> {
 
   // --- Seguranca (seccao 23) ---------------------------------------------
   app.use(helmet());
+  app.use(requestIdMiddleware);
   app.enableCors({
     origin: config.corsOrigins,
     credentials: true,
