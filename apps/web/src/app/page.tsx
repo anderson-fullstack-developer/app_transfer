@@ -1,60 +1,58 @@
-import { cn } from '@app/ui/lib/cn';
+import Link from 'next/link';
 import { env } from '@/lib/env';
 
 const steps = [
-  'O estudante cria conta e escolhe um @username.',
-  'A familia pesquisa o @username e confirma a pessoa certa.',
-  'Escolhe o valor em EUR e ve a cotacao EUR -> MAD.',
-  'Confirma. Ambos acompanham o estado da transferencia.',
+  { t: 'O estudante cria conta', d: 'e escolhe um identificador único: @nome.' },
+  { t: 'A família pesquisa o @nome', d: 'e confirma que é a pessoa certa.' },
+  { t: 'Escolhe o valor em EUR', d: 'e vê a cotação EUR → MAD, taxa e valor final.' },
+  { t: 'Confirma e acompanha', d: 'ambos veem o estado e o histórico da transferência.' },
 ];
 
 export default function HomePage(): React.JSX.Element {
   return (
-    <main className="mx-auto flex min-h-screen max-w-2xl flex-col justify-center gap-10 px-6 py-16">
-      <header className="space-y-4">
-        <span
-          className={cn(
-            'inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium',
-            'bg-muted text-muted-foreground',
-          )}
-        >
-          Modo {env.NEXT_PUBLIC_APP_MODE} — nenhuma transferencia representa dinheiro real
+    <main className="mx-auto max-w-3xl px-6 py-16 sm:py-24">
+      <header className="space-y-5">
+        <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-xs font-medium text-muted-foreground">
+          <span className="h-1.5 w-1.5 rounded-full bg-success" />
+          Modo {env.NEXT_PUBLIC_APP_MODE} — nenhuma transferência representa dinheiro real
         </span>
-        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-          Apoio financeiro para estudantes, simples e rastreavel.
+
+        <h1 className="text-balance text-4xl font-semibold tracking-tight sm:text-5xl">
+          Apoio financeiro para estudantes, simples e rastreável.
         </h1>
-        <p className="text-muted-foreground">
-          Para estudantes sao-tomenses em Marrocos e as suas familias. Sem intermediarios informais:
-          cada envio tem cotacao clara, estado e historico.
+
+        <p className="max-w-xl text-lg text-muted-foreground">
+          Para estudantes são-tomenses em Marrocos e as suas famílias. Sem intermediários informais:
+          cada envio tem cotação clara, estado e histórico.
         </p>
+
+        <div className="flex flex-wrap gap-3 pt-2">
+          <Link
+            href="/register"
+            className="inline-flex h-11 items-center justify-center rounded-lg bg-primary px-6 text-sm font-medium text-primary-foreground shadow-sm transition hover:brightness-110"
+          >
+            Criar conta
+          </Link>
+          <Link
+            href="/login"
+            className="inline-flex h-11 items-center justify-center rounded-lg border border-border bg-surface px-6 text-sm font-medium transition hover:bg-muted"
+          >
+            Entrar
+          </Link>
+        </div>
       </header>
 
-      <ol className="space-y-3">
-        {steps.map((step, i) => (
-          <li key={step} className="flex gap-3">
-            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
+      <ol className="mt-16 grid gap-4 sm:grid-cols-2">
+        {steps.map((s, i) => (
+          <li key={s.t} className="rounded-xl border border-border bg-surface p-5 shadow-card">
+            <span className="grid h-8 w-8 place-items-center rounded-lg bg-primary/10 text-sm font-semibold text-primary">
               {i + 1}
             </span>
-            <span className="text-sm leading-6">{step}</span>
+            <p className="mt-3 font-medium">{s.t}</p>
+            <p className="text-sm text-muted-foreground">{s.d}</p>
           </li>
         ))}
       </ol>
-
-      <div className="flex flex-wrap gap-3">
-        <a
-          href="/register"
-          className="rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground"
-        >
-          Criar conta
-        </a>
-        <a href="/login" className="rounded-lg border px-5 py-2.5 text-sm font-medium">
-          Entrar
-        </a>
-      </div>
-
-      <footer className="text-xs text-muted-foreground">
-        API: <code>{env.NEXT_PUBLIC_API_URL}</code>
-      </footer>
     </main>
   );
 }

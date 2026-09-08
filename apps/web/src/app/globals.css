@@ -2,30 +2,71 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Tema fintech. Paleta neutra + um primary confiante (indigo).
+ * Light-first; o bloco dark redefine só os papeis.
+ */
 :root {
-  --background: 0 0% 100%;
+  --background: 210 20% 98%;
+  --surface: 0 0% 100%;
   --foreground: 222 47% 11%;
-  --primary: 221 83% 53%;
-  --primary-foreground: 210 40% 98%;
-  --muted: 210 40% 96%;
-  --muted-foreground: 215 16% 47%;
-  --border: 214 32% 91%;
+  --muted: 210 16% 93%;
+  --muted-foreground: 215 16% 42%;
+  --primary: 243 75% 59%;
+  --primary-foreground: 0 0% 100%;
+  --border: 214 20% 88%;
+  --ring: 243 75% 59%;
+  --success: 152 56% 36%;
+  --success-foreground: 152 65% 96%;
+  --danger: 0 72% 51%;
   --radius: 0.75rem;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: 222 47% 11%;
-    --foreground: 210 40% 98%;
-    --primary: 217 91% 60%;
-    --primary-foreground: 222 47% 11%;
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
-    --border: 217 33% 20%;
+  :root:not([data-theme='light']) {
+    --background: 224 40% 8%;
+    --surface: 222 38% 11%;
+    --foreground: 210 20% 96%;
+    --muted: 223 30% 17%;
+    --muted-foreground: 215 18% 62%;
+    --primary: 245 80% 68%;
+    --primary-foreground: 224 40% 8%;
+    --border: 223 25% 20%;
+    --ring: 245 80% 68%;
+    --success: 152 45% 55%;
+    --success-foreground: 152 40% 12%;
+    --danger: 0 72% 62%;
   }
+}
+
+:root[data-theme='dark'] {
+  --background: 224 40% 8%;
+  --surface: 222 38% 11%;
+  --foreground: 210 20% 96%;
+  --muted: 223 30% 17%;
+  --muted-foreground: 215 18% 62%;
+  --primary: 245 80% 68%;
+  --primary-foreground: 224 40% 8%;
+  --border: 223 25% 20%;
+  --ring: 245 80% 68%;
+  --success: 152 45% 55%;
+  --success-foreground: 152 40% 12%;
+  --danger: 0 72% 62%;
+}
+
+* {
+  border-color: hsl(var(--border));
 }
 
 body {
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Gradiente suave de fundo para os ecras de auth. */
+.auth-bg {
+  background:
+    radial-gradient(60rem 60rem at 50% -20rem, hsl(var(--primary) / 0.12), transparent 70%),
+    hsl(var(--background));
 }

@@ -4,10 +4,10 @@ export function Label({
   className,
   ...props
 }: React.LabelHTMLAttributes<HTMLLabelElement>): React.JSX.Element {
-  return <label className={cn('text-sm font-medium', className)} {...props} />;
+  return <label className={cn('text-sm font-medium text-foreground', className)} {...props} />;
 }
 
-/** Campo de formulario com label, conteudo e mensagem de erro acessivel. */
+/** Campo de formulario: label, conteudo e mensagem de erro acessivel. */
 export function Field({
   label,
   htmlFor,
@@ -27,7 +27,7 @@ export function Field({
       {children}
       {hint && !error && <p className="text-xs text-muted-foreground">{hint}</p>}
       {error && (
-        <p id={`${htmlFor}-error`} className="text-xs text-red-600" role="alert">
+        <p id={`${htmlFor}-error`} className="text-xs font-medium text-danger" role="alert">
           {error}
         </p>
       )}
