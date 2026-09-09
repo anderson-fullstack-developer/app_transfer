@@ -1,7 +1,7 @@
 import { createHash, randomBytes } from 'node:crypto';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { hashPassword, verifyPassword } from '@app/shared/password';
-import { AppError, ErrorCode, UserRole, UserStatus } from '@app/shared';
+import { AppError, type AuthUser, ErrorCode, UserRole, UserStatus } from '@app/shared';
 import { PrismaService } from '../database/prisma.service';
 import { AuditService } from '../audit/audit.service';
 import { EMAIL_PROVIDER, type EmailProvider } from '../email/email.types';
@@ -9,7 +9,6 @@ import { AppConfigService } from '../config/app-config.service';
 import { TokenService, type IssuedTokens } from './token.service';
 import { type RegisterDto } from './dto/register.dto';
 import { type LoginDto } from './dto/login.dto';
-import { type AuthenticatedUser } from './auth.types';
 
 interface RequestContext {
   ip?: string | null;
@@ -17,7 +16,7 @@ interface RequestContext {
 }
 
 export interface AuthResult {
-  user: AuthenticatedUser;
+  user: AuthUser;
   tokens: IssuedTokens;
 }
 
@@ -69,7 +68,7 @@ export class AuthService {
     await this.sendEmailVerification(user.id, user.email);
 
     const tokens = await this.tokens.issueForNewSession(user, ctx);
-    return { user: this.toAuthUser(user), tokens };
+    return { user: await this.toAuthUser(user), tokens };
   }
 
   // --- Login -----------------------------------------------------------------
@@ -100,7 +99,7 @@ export class AuthService {
     });
 
     const tokens = await this.tokens.issueForNewSession(user, ctx);
-    return { user: this.toAuthUser(user), tokens };
+    return { user: await this.toAuthUser(user), tokens };
   }
 
   // --- Sessao --------------------------------------------------------------
@@ -118,7 +117,7 @@ export class AuthService {
     }
   }
 
-  async getMe(userId: string): Promise<AuthenticatedUser> {
+  async getMe(userId: string): Promise<AuthUser> {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) {
       throw new AppError(ErrorCode.UNAUTHORIZED, 'Sessao invalida.');
@@ -227,17 +226,27 @@ export class AuthService {
 
   // --- Helpers ---------------------------------------------------------------
 
-  private toAuthUser(user: {
+  /** Enriquce o utilizador com `onboardingComplete` (uma query extra). */
+  private async toAuthUser(user: {
     id: string;
     email: string;
     role: UserRole;
     emailVerified: boolean;
-  }): AuthenticatedUser {
+  }): Promise<AuthUser> {
+    let onboardingComplete = true;
+    if (user.role === UserRole.STUDENT) {
+      const profile = await this.prisma.studentProfile.findUnique({
+        where: { userId: user.id },
+        select: { id: true },
+      });
+      onboardingComplete = profile !== null;
+    }
     return {
       id: user.id,
       email: user.email,
       role: user.role,
       emailVerified: user.emailVerified,
+      onboardingComplete,
     };
   }
 }

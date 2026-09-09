@@ -6,6 +6,7 @@ import { DatabaseModule } from './database/database.module';
 import { EmailModule } from './email/email.module';
 import { AuditModule } from './audit/audit.module';
 import { AuthModule } from './auth/auth.module';
+import { StudentsModule } from './students/students.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 import { AllExceptionsFilter } from './common/http/all-exceptions.filter';
@@ -28,6 +29,7 @@ import { HealthModule } from './health/health.module';
     AuditModule,
     ThrottlerModule.forRoot([{ name: 'default', ttl: 60_000, limit: 120 }]),
     AuthModule,
+    StudentsModule,
     HealthModule,
   ],
   providers: [

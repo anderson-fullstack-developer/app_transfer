@@ -1,79 +1,117 @@
 'use client';
 
-import { Alert, Button, Card } from '@app/ui/components';
+import { Alert, Card } from '@app/ui/components';
 import { RequireAuth } from '@/components/require-auth';
+import { AppShell } from '@/components/app-shell';
 import { useAuth } from '@/lib/auth-context';
+import { useStudentProfile } from '@/lib/queries';
 
-const ROLE_LABEL: Record<string, string> = {
-  STUDENT: 'Estudante',
-  SENDER: 'Remetente',
-  ADMIN: 'Administrador',
+const KYC_LABEL: Record<string, string> = {
+  NOT_STARTED: 'Por iniciar',
+  PENDING: 'Em análise',
+  VERIFIED: 'Verificado',
+  REJECTED: 'Rejeitado',
 };
 
-function Dashboard(): React.JSX.Element {
-  const { user, logout } = useAuth();
-  if (!user) return <></>;
-
-  const initial = user.email.charAt(0).toUpperCase();
+function StudentDashboard(): React.JSX.Element {
+  const { user } = useAuth();
+  const { data: profile, isLoading } = useStudentProfile(user?.role === 'STUDENT');
 
   return (
-    <div className="min-h-screen">
-      <header className="border-b border-border bg-surface">
-        <div className="mx-auto flex max-w-4xl items-center justify-between px-5 py-3">
-          <span className="flex items-center gap-2 text-sm font-semibold tracking-tight">
-            <span className="grid h-6 w-6 place-items-center rounded-md bg-primary text-primary-foreground">
-              €
-            </span>
-            app-transfer
-          </span>
-          <div className="flex items-center gap-3">
-            <span className="grid h-8 w-8 place-items-center rounded-full bg-muted text-xs font-semibold">
-              {initial}
-            </span>
-            <Button variant="ghost" size="sm" onClick={() => void logout()}>
-              Sair
-            </Button>
+    <div className="space-y-6">
+      <div>
+        <p className="text-sm text-muted-foreground">Bem-vindo</p>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          {profile?.displayName ?? user?.email}
+        </h1>
+        {profile && <p className="text-sm text-primary">{profile.username}</p>}
+      </div>
+
+      {user && !user.emailVerified && (
+        <Alert variant="info">
+          Ainda não confirmaste o teu email. Verifica a caixa de entrada (ou o terminal, em
+          desenvolvimento).
+        </Alert>
+      )}
+
+      {isLoading ? (
+        <div className="grid gap-4 sm:grid-cols-3">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="h-24 animate-pulse rounded-xl bg-muted" />
+          ))}
+        </div>
+      ) : profile ? (
+        <>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <Card className="space-y-1">
+              <p className="text-sm text-muted-foreground">Onde estudas</p>
+              <p className="font-semibold">
+                {profile.city}, {profile.country}
+              </p>
+            </Card>
+            <Card className="space-y-1">
+              <p className="text-sm text-muted-foreground">Universidade</p>
+              <p className="font-semibold">{profile.university}</p>
+            </Card>
+            <Card className="space-y-1">
+              <p className="text-sm text-muted-foreground">Verificação (KYC)</p>
+              <p className="font-semibold">{KYC_LABEL[profile.kycStatus] ?? profile.kycStatus}</p>
+            </Card>
           </div>
-        </div>
-      </header>
 
-      <main className="mx-auto max-w-4xl space-y-6 px-5 py-8">
-        <div>
-          <p className="text-sm text-muted-foreground">Bem-vindo</p>
-          <h1 className="text-2xl font-semibold tracking-tight">{user.email}</h1>
-        </div>
-
-        {!user.emailVerified && (
-          <Alert variant="info">
-            Ainda não confirmaste o teu email. Verifica a caixa de entrada (ou o terminal, em
-            desenvolvimento).
-          </Alert>
-        )}
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Card className="space-y-1">
-            <p className="text-sm text-muted-foreground">Tipo de conta</p>
-            <p className="text-lg font-semibold">{ROLE_LABEL[user.role] ?? user.role}</p>
-          </Card>
-          <Card className="space-y-1">
-            <p className="text-sm text-muted-foreground">Email verificado</p>
-            <p className="text-lg font-semibold">{user.emailVerified ? 'Sim' : 'Não'}</p>
-          </Card>
-        </div>
-
-        <Card className="flex items-center justify-between gap-4">
-          <div>
-            <p className="font-medium">Completar o perfil</p>
-            <p className="text-sm text-muted-foreground">
-              O próximo passo (onboarding e escolha do @username) chega na próxima fase.
+          <Card>
+            <p className="font-medium">Total recebido</p>
+            <p className="mt-1 text-3xl font-semibold tracking-tight">— MAD</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Ainda não recebeste transferências. Partilha o teu {profile.username} com a família.
             </p>
-          </div>
-          <Button size="sm" disabled>
-            Em breve
-          </Button>
-        </Card>
-      </main>
+          </Card>
+        </>
+      ) : (
+        <Alert>Não foi possível carregar o perfil.</Alert>
+      )}
     </div>
+  );
+}
+
+function SenderDashboard(): React.JSX.Element {
+  const { user } = useAuth();
+  return (
+    <div className="space-y-6">
+      <div>
+        <p className="text-sm text-muted-foreground">Bem-vindo</p>
+        <h1 className="text-2xl font-semibold tracking-tight">{user?.email}</h1>
+      </div>
+      {user && !user.emailVerified && (
+        <Alert variant="info">
+          Ainda não confirmaste o teu email. Verifica a caixa de entrada (ou o terminal).
+        </Alert>
+      )}
+      <Card className="space-y-2">
+        <p className="font-medium">Enviar dinheiro</p>
+        <p className="text-sm text-muted-foreground">
+          Pesquisa o @username do estudante, confirma e envia. Disponível na próxima fase.
+        </p>
+      </Card>
+    </div>
+  );
+}
+
+function Dashboard(): React.JSX.Element {
+  const { user } = useAuth();
+  return (
+    <AppShell>
+      {user?.role === 'STUDENT' ? (
+        <StudentDashboard />
+      ) : user?.role === 'ADMIN' ? (
+        <Card>
+          <p className="font-medium">Painel de administração</p>
+          <p className="text-sm text-muted-foreground">Disponível numa fase posterior.</p>
+        </Card>
+      ) : (
+        <SenderDashboard />
+      )}
+    </AppShell>
   );
 }
 

@@ -10,6 +10,7 @@ import { Alert, Button, Card, Field, Input } from '@app/ui/components';
 import { cn } from '@app/ui/lib/cn';
 import { useAuth } from '@/lib/auth-context';
 import { ApiError } from '@/lib/api-client';
+import { postAuthRoute } from '@/lib/post-auth-route';
 
 const OPTIONS = [
   { value: 'STUDENT', title: 'Sou estudante', desc: 'Vou receber apoio da minha familia.' },
@@ -34,8 +35,8 @@ export default function RegisterPage(): React.JSX.Element {
   const onSubmit = async (values: RegisterInput): Promise<void> => {
     setFormError(null);
     try {
-      await registerUser(values);
-      router.push('/dashboard');
+      const user = await registerUser(values);
+      router.push(postAuthRoute(user));
     } catch (err) {
       setFormError(err instanceof ApiError ? err.message : 'Nao foi possivel criar a conta.');
     }

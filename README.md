@@ -129,6 +129,7 @@ módulos e as regras de dependência entre camadas.
 | 1    | Monorepo + configuração + base partilhada                            | ✅     |
 | 2    | Prisma schema + migrations + seeds                                   | ✅     |
 | 3    | Auth + roles + segurança base (login com Google: opcional, pendente) | ✅     |
-| 4–13 | Onboarding, quotes, transfers, dashboards, admin, testes, docs, CI   | ⏳     |
+| 4    | Onboarding do estudante + `@username`                                | ✅     |
+| 5–13 | Pesquisa, quotes, transfers, dashboards, admin, testes, docs, CI     | ⏳     |
 
 Ordem detalhada em `documentatio.md` (secções 41–42).

@@ -9,6 +9,7 @@ import { type LoginInput, loginSchema } from '@app/shared';
 import { Alert, Button, Card, Field, Input } from '@app/ui/components';
 import { useAuth } from '@/lib/auth-context';
 import { ApiError } from '@/lib/api-client';
+import { postAuthRoute } from '@/lib/post-auth-route';
 
 function LoginForm(): React.JSX.Element {
   const router = useRouter();
@@ -26,8 +27,9 @@ function LoginForm(): React.JSX.Element {
   const onSubmit = async (values: LoginInput): Promise<void> => {
     setFormError(null);
     try {
-      await login(values);
-      router.push(params.get('next') ?? '/dashboard');
+      const user = await login(values);
+      const target = postAuthRoute(user);
+      router.push(target === '/dashboard' ? (params.get('next') ?? '/dashboard') : target);
     } catch (err) {
       setFormError(err instanceof ApiError ? err.message : 'Nao foi possivel iniciar sessao.');
     }

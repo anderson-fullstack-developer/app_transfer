@@ -43,6 +43,8 @@ export interface AuthUser {
   email: string;
   role: 'STUDENT' | 'SENDER' | 'ADMIN';
   emailVerified: boolean;
+  /** O utilizador ja completou o onboarding (perfil criado)? */
+  onboardingComplete: boolean;
 }
 
 export interface AuthResult {

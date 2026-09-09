@@ -13,6 +13,9 @@ export class AuthUserDto {
 
   @ApiProperty()
   emailVerified!: boolean;
+
+  @ApiProperty({ description: 'O utilizador ja completou o onboarding (perfil criado)?' })
+  onboardingComplete!: boolean;
 }
 
 export class AuthResultDto {
