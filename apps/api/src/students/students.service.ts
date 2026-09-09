@@ -4,6 +4,7 @@ import {
   ErrorCode,
   formatUsername,
   normalizeUsername,
+  type PublicStudentView,
   type StudentProfileInput,
   type StudentProfileUpdateInput,
   type StudentProfileView,
@@ -42,6 +43,39 @@ export class StudentsService {
       username: formatUsername(normalized),
       available: !taken,
       reason: taken ? 'Esse username ja esta em uso.' : undefined,
+    };
+  }
+
+  // --- Pesquisa publica por @username -------------------------------
+
+  /**
+   * Vista publica de um estudante. Devolve APENAS dados minimos (doc, seccao 24):
+   * username, nome, cidade, pais, verificado. Nunca email/telefone/DOB/KYC/ids.
+   */
+  async findPublicByUsername(rawUsername: string): Promise<PublicStudentView> {
+    const normalized = normalizeUsername(rawUsername);
+    const profile = await this.prisma.studentProfile.findUnique({
+      where: { usernameNormalized: normalized },
+      select: {
+        username: true,
+        displayName: true,
+        city: true,
+        country: true,
+        kycStatus: true,
+      },
+    });
+    if (!profile) {
+      throw new AppError(
+        ErrorCode.USERNAME_NOT_FOUND,
+        `Nao encontramos nenhum estudante com o username ${formatUsername(normalized)}.`,
+      );
+    }
+    return {
+      username: formatUsername(profile.username),
+      displayName: profile.displayName,
+      city: profile.city,
+      country: profile.country,
+      verified: profile.kycStatus === 'VERIFIED',
     };
   }
 

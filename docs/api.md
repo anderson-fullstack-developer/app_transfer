@@ -59,19 +59,28 @@ POST /api/v1/auth/reset-password       { token, password }
 **Proteção:** rate limiting em `login` (10/min), `register` / `forgot-password` /
 `reset-password` (5/min). `USER_REGISTERED` e `USER_LOGIN` gravados no audit log.
 
-### Students — onboarding implementado (Fase 4)
+### Students (Fases 4–5)
 
 ```
 GET   /api/v1/students/username/:username/availability   (autoritativo: formato + reservados + BD)
 GET   /api/v1/students/me                                (Bearer, role STUDENT; 404 se sem perfil)
 POST  /api/v1/students/me                                (completar perfil / onboarding)
 PATCH /api/v1/students/me                                (atualizar; mudanca de @username -> audit)
-GET   /api/v1/students/by-username/:username             (pesquisa publica — Fase 5)
+GET   /api/v1/students/by-username/:username             (so username/nome/cidade/pais/verified)
 ```
 
+`by-username` devolve **apenas** dados publicos minimos (doc, seccao 24) —
+nunca email, telefone, data de nascimento, KYC ou IDs internos. Rate limit 20/min.
+
 Validacao via `ZodValidationPipe` com o schema de `@app/shared/contracts`
-(a mesma fonte de verdade do frontend). `/auth/*` passa a devolver
-`onboardingComplete` no objeto `user`.
+(a mesma fonte de verdade do frontend). `/auth/*` devolve `onboardingComplete`.
+
+### Senders (Fase 5)
+
+```
+GET /api/v1/senders/me    (Bearer, role SENDER; 404 se sem perfil)
+PUT /api/v1/senders/me    (criar ou atualizar: fullName [+ country, phone opcionais])
+```
 
 ### Quotes (Fase 6)
 

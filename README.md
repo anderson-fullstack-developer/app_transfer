@@ -130,6 +130,7 @@ módulos e as regras de dependência entre camadas.
 | 2    | Prisma schema + migrations + seeds                                   | ✅     |
 | 3    | Auth + roles + segurança base (login com Google: opcional, pendente) | ✅     |
 | 4    | Onboarding do estudante + `@username`                                | ✅     |
-| 5–13 | Pesquisa, quotes, transfers, dashboards, admin, testes, docs, CI     | ⏳     |
+| 5    | Pesquisa de estudante pelo remetente + onboarding do sender          | ✅     |
+| 6–13 | Quotes, transfers, dashboards, admin, testes, docs, CI               | ⏳     |
 
 Ordem detalhada em `documentatio.md` (secções 41–42).

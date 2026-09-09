@@ -6,6 +6,7 @@ import {
   studentProfileSchema,
   studentProfileUpdateSchema,
   UserRole,
+  type PublicStudentView,
   type StudentProfileInput,
   type StudentProfileUpdateInput,
   type StudentProfileView,
@@ -30,6 +31,13 @@ export class StudentsController {
   @ApiOperation({ summary: 'Verificar se um @username esta disponivel (autoritativo)' })
   checkUsername(@Param('username') username: string): Promise<UsernameAvailability> {
     return this.students.checkUsernameAvailability(username);
+  }
+
+  @Get('by-username/:username')
+  @Throttle({ default: { limit: 20, ttl: 60_000 } })
+  @ApiOperation({ summary: 'Pesquisar um estudante pelo @username (dados publicos minimos)' })
+  findByUsername(@Param('username') username: string): Promise<PublicStudentView> {
+    return this.students.findPublicByUsername(username);
   }
 
   @Get('me')

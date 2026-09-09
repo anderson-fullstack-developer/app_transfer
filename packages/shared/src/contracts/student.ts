@@ -59,7 +59,20 @@ export interface UsernameAvailability {
   reason?: string;
 }
 
-/** Perfil publico/privado do estudante devolvido pela API. */
+/**
+ * Vista PUBLICA do estudante (pesquisa por @username).
+ * Data minimization (doc, seccao 24): NUNCA email, telefone, data de
+ * nascimento, KYC ou IDs internos.
+ */
+export interface PublicStudentView {
+  username: string;
+  displayName: string;
+  city: string;
+  country: string;
+  verified: boolean;
+}
+
+/** Perfil privado do estudante (o proprio) devolvido pela API. */
 export interface StudentProfileView {
   id: string;
   username: string;

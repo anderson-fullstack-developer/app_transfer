@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { Alert, Card } from '@app/ui/components';
 import { RequireAuth } from '@/components/require-auth';
 import { AppShell } from '@/components/app-shell';
@@ -87,10 +88,24 @@ function SenderDashboard(): React.JSX.Element {
           Ainda não confirmaste o teu email. Verifica a caixa de entrada (ou o terminal).
         </Alert>
       )}
-      <Card className="space-y-2">
-        <p className="font-medium">Enviar dinheiro</p>
-        <p className="text-sm text-muted-foreground">
-          Pesquisa o @username do estudante, confirma e envia. Disponível na próxima fase.
+      <Card className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="font-medium">Enviar dinheiro</p>
+          <p className="text-sm text-muted-foreground">
+            Pesquisa o @username do estudante e confirma a pessoa.
+          </p>
+        </div>
+        <Link
+          href="/send"
+          className="inline-flex h-10 items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground"
+        >
+          Enviar
+        </Link>
+      </Card>
+      <Card>
+        <p className="font-medium">Transferências recentes</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Ainda não fizeste nenhuma transferência.
         </p>
       </Card>
     </div>
