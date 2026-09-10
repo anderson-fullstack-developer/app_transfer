@@ -8,6 +8,8 @@ import { AuditModule } from './audit/audit.module';
 import { AuthModule } from './auth/auth.module';
 import { StudentsModule } from './students/students.module';
 import { SendersModule } from './senders/senders.module';
+import { PaymentsModule } from './payments/payments.module';
+import { QuotesModule } from './quotes/quotes.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 import { AllExceptionsFilter } from './common/http/all-exceptions.filter';
@@ -32,6 +34,8 @@ import { HealthModule } from './health/health.module';
     AuthModule,
     StudentsModule,
     SendersModule,
+    PaymentsModule,
+    QuotesModule,
     HealthModule,
   ],
   providers: [

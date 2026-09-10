@@ -128,6 +128,21 @@ export class Money {
   }
 }
 
+/**
+ * Formata minor units para apresentacao, ex.: (12345, 'EUR') -> "123,45 EUR".
+ * Locale pt-PT: espaco como separador de milhares, virgula como decimal.
+ */
+export function formatMoney(minor: bigint | number | string, currency: CurrencyCode): string {
+  const money = Money.fromMinor(currency, minor);
+  const { scale } = getCurrency(currency);
+  const value = Number(money.toMajorString());
+  const formatted = value.toLocaleString('pt-PT', {
+    minimumFractionDigits: scale,
+    maximumFractionDigits: scale,
+  });
+  return `${formatted} ${currency}`;
+}
+
 export type RoundingMode = 'floor' | 'ceil' | 'half-up';
 
 function roundDecimalToBigInt(value: Decimal, mode: RoundingMode): bigint {

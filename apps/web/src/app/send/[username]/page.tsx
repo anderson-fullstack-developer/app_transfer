@@ -4,7 +4,7 @@ import { use } from 'react';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import { normalizeUsername, type PublicStudentView } from '@app/shared';
-import { Alert, Button, Card } from '@app/ui/components';
+import { Alert, Card } from '@app/ui/components';
 import { RequireAuth } from '@/components/require-auth';
 import { AppShell } from '@/components/app-shell';
 import { apiFetch, ApiError } from '@/lib/api-client';
@@ -57,9 +57,12 @@ function Confirm({ username }: { username: string }): React.JSX.Element {
       </Card>
 
       <div className="space-y-2">
-        <Button className="w-full" disabled>
-          Definir o valor (em breve)
-        </Button>
+        <Link
+          href={`/send/${encodeURIComponent(normalized)}/amount`}
+          className="flex h-11 w-full items-center justify-center rounded-lg bg-primary text-sm font-medium text-primary-foreground"
+        >
+          Continuar — definir o valor
+        </Link>
         <Link
           href="/send"
           className="block text-center text-sm text-muted-foreground hover:underline"

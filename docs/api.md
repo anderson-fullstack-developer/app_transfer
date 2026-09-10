@@ -82,12 +82,18 @@ GET /api/v1/senders/me    (Bearer, role SENDER; 404 se sem perfil)
 PUT /api/v1/senders/me    (criar ou atualizar: fullName [+ country, phone opcionais])
 ```
 
-### Quotes (Fase 6)
+### Quotes — implementado (Fase 6)
 
 ```
-POST /api/v1/quotes
-GET  /api/v1/quotes/:id
+GET  /api/v1/quotes/rate              parametros de cotacao (preview no browser)
+POST /api/v1/quotes                   { studentUsername, amount }  (@Roles SENDER)
+GET  /api/v1/quotes/:id               (so o sender dono)
 ```
+
+`amount` em EUR (string "100" ou "100,50"). Valida min/max
+(`TRANSFER_MIN/MAX_SOURCE_MINOR`). Quote expira em `QUOTE_TTL_SECONDS`
+(expiracao preguicosa no `GET`). Referencia publica `QTE-XXXX`. Montantes na
+resposta em minor units como string (BigInt). audit `QUOTE_CREATED`.
 
 ### Transfers (Fase 7)
 
