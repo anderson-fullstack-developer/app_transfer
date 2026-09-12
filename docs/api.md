@@ -128,12 +128,17 @@ GET  /api/v1/transfers
 GET  /api/v1/transfers/:reference
 ```
 
-### Favorites / Notifications (Fases 8–9)
+### Favorites — implementado (Fase 8)
 
 ```
-GET    /api/v1/favorites
-POST   /api/v1/favorites
-DELETE /api/v1/favorites/:id
+GET    /api/v1/favorites             (@Roles SENDER) lista os meus favoritos
+POST   /api/v1/favorites             { studentUsername, alias? } — 409 se ja existe
+DELETE /api/v1/favorites/:id         204; so o dono pode remover
+```
+
+### Notifications (Fase 9)
+
+```
 GET    /api/v1/notifications
 PATCH  /api/v1/notifications/:id/read
 ```

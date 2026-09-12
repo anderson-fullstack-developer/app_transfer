@@ -1,13 +1,59 @@
 'use client';
 
-import { use } from 'react';
+import { use, useState } from 'react';
 import Link from 'next/link';
-import { useQuery } from '@tanstack/react-query';
-import { normalizeUsername, type PublicStudentView } from '@app/shared';
-import { Alert, Card } from '@app/ui/components';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { normalizeUsername, type FavoriteView, type PublicStudentView } from '@app/shared';
+import { Alert, Button, Card } from '@app/ui/components';
 import { RequireAuth } from '@/components/require-auth';
 import { AppShell } from '@/components/app-shell';
 import { apiFetch, ApiError } from '@/lib/api-client';
+
+function FavoriteToggle({
+  student,
+  normalized,
+}: {
+  student: PublicStudentView;
+  normalized: string;
+}): React.JSX.Element {
+  const queryClient = useQueryClient();
+  const [busy, setBusy] = useState(false);
+  const [favError, setFavError] = useState<string | null>(null);
+
+  const { data: favorites } = useQuery<FavoriteView[]>({
+    queryKey: ['favorites'],
+    queryFn: () => apiFetch<FavoriteView[]>('/favorites'),
+  });
+  const existing = favorites?.find((f) => f.student.username === student.username);
+
+  const toggle = async (): Promise<void> => {
+    setFavError(null);
+    setBusy(true);
+    try {
+      if (existing) {
+        await apiFetch(`/favorites/${existing.id}`, { method: 'DELETE' });
+      } else {
+        await apiFetch('/favorites', { method: 'POST', body: { studentUsername: normalized } });
+      }
+      await queryClient.invalidateQueries({ queryKey: ['favorites'] });
+    } catch (err) {
+      setFavError(
+        err instanceof ApiError ? err.message : 'Não foi possível atualizar os favoritos.',
+      );
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div>
+      <Button variant="secondary" size="sm" loading={busy} onClick={() => void toggle()}>
+        {existing ? '★ Nos favoritos' : '☆ Adicionar aos favoritos'}
+      </Button>
+      {favError && <p className="mt-2 text-xs text-danger">{favError}</p>}
+    </div>
+  );
+}
 
 function Confirm({ username }: { username: string }): React.JSX.Element {
   const normalized = normalizeUsername(username);
@@ -54,6 +100,7 @@ function Confirm({ username }: { username: string }): React.JSX.Element {
             </span>
           )}
         </div>
+        <FavoriteToggle student={data} normalized={normalized} />
       </Card>
 
       <div className="space-y-2">

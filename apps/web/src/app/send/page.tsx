@@ -2,11 +2,42 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { normalizeUsername, type PublicStudentView } from '@app/shared';
+import { useQuery } from '@tanstack/react-query';
+import { normalizeUsername, type FavoriteView, type PublicStudentView } from '@app/shared';
 import { Alert, Button, Card, Field, Input } from '@app/ui/components';
 import { RequireAuth } from '@/components/require-auth';
 import { AppShell } from '@/components/app-shell';
 import { apiFetch, ApiError } from '@/lib/api-client';
+
+function FavoritesQuickPicks(): React.JSX.Element | null {
+  const router = useRouter();
+  const { data } = useQuery<FavoriteView[]>({
+    queryKey: ['favorites'],
+    queryFn: () => apiFetch<FavoriteView[]>('/favorites'),
+  });
+
+  if (!data || data.length === 0) return null;
+
+  return (
+    <div className="space-y-2">
+      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Favoritos</p>
+      <div className="flex flex-wrap gap-2">
+        {data.map((f) => (
+          <button
+            key={f.id}
+            type="button"
+            onClick={() =>
+              router.push(`/send/${encodeURIComponent(normalizeUsername(f.student.username))}`)
+            }
+            className="rounded-full border border-border bg-surface px-3 py-1.5 text-sm transition hover:bg-muted"
+          >
+            ★ {f.alias || f.student.displayName}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 function SendSearch(): React.JSX.Element {
   const router = useRouter();
@@ -46,6 +77,8 @@ function SendSearch(): React.JSX.Element {
           Para quem queres enviar? Escreve o <strong>@username</strong> do estudante.
         </p>
       </div>
+
+      <FavoritesQuickPicks />
 
       <Card className="space-y-4">
         <form

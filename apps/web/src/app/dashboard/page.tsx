@@ -2,7 +2,12 @@
 
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
-import { formatMoney, type TransferListItem } from '@app/shared';
+import {
+  formatMoney,
+  normalizeUsername,
+  type FavoriteView,
+  type TransferListItem,
+} from '@app/shared';
 import { Alert, Card } from '@app/ui/components';
 import { cn } from '@app/ui/lib/cn';
 import { RequireAuth } from '@/components/require-auth';
@@ -84,6 +89,32 @@ function RecentTransfers({ emptyHint }: { emptyHint: string }): React.JSX.Elemen
         </Link>
       </li>
     </ul>
+  );
+}
+
+function FavoritesList(): React.JSX.Element {
+  const { data, isLoading } = useQuery<FavoriteView[]>({
+    queryKey: ['favorites'],
+    queryFn: () => apiFetch<FavoriteView[]>('/favorites'),
+  });
+
+  if (isLoading) return <div className="h-10 animate-pulse rounded-lg bg-muted" />;
+  if (!data || data.length === 0) {
+    return <p className="text-sm text-muted-foreground">Ainda não tens favoritos.</p>;
+  }
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      {data.map((f) => (
+        <Link
+          key={f.id}
+          href={`/send/${encodeURIComponent(normalizeUsername(f.student.username))}`}
+          className="rounded-full border border-border bg-surface px-3 py-1.5 text-sm transition hover:bg-muted"
+        >
+          ★ {f.alias || f.student.displayName}
+        </Link>
+      ))}
+    </div>
   );
 }
 
@@ -171,6 +202,10 @@ function SenderDashboard(): React.JSX.Element {
         >
           Enviar
         </Link>
+      </Card>
+      <Card>
+        <p className="mb-2 font-medium">Beneficiários favoritos</p>
+        <FavoritesList />
       </Card>
       <Card>
         <p className="mb-2 font-medium">Transferências recentes</p>
