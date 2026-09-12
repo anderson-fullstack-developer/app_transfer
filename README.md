@@ -132,6 +132,7 @@ módulos e as regras de dependência entre camadas.
 | 4    | Onboarding do estudante + `@username`                                | ✅     |
 | 5    | Pesquisa de estudante pelo remetente + onboarding do sender          | ✅     |
 | 6    | Cotação (Quote) + abstração de PaymentProvider + MockPaymentProvider | ✅     |
-| 7–13 | Transfers, dashboards, admin, testes, docs, CI                       | ⏳     |
+| 7    | Transfer + state machine + idempotência                              | ✅     |
+| 8–13 | Dashboards, notificações, admin, testes, docs, CI                    | ⏳     |
 
 Ordem detalhada em `documentatio.md` (secções 41–42).

@@ -27,6 +27,8 @@ interface RequestOptions {
   body?: unknown;
   /** Nao tentar renovar a sessao em caso de 401 (usado pelo proprio /auth/refresh). */
   skipRefresh?: boolean;
+  /** Headers extra, ex.: Idempotency-Key. */
+  headers?: Record<string, string>;
 }
 
 let refreshInFlight: Promise<boolean> | null = null;
@@ -60,6 +62,7 @@ export async function apiFetch<T>(path: string, options: RequestOptions = {}): P
       headers: {
         ...(options.body !== undefined ? { 'Content-Type': 'application/json' } : {}),
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...options.headers,
       },
       body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
     });

@@ -90,6 +90,31 @@ POST /api/v1/quotes                   { studentUsername, amount }  (@Roles SENDE
 GET  /api/v1/quotes/:id               (so o sender dono)
 ```
 
+### Transfers — implementado (Fase 7)
+
+```
+POST /api/v1/transfers                { quoteId }  (@Roles SENDER, header Idempotency-Key obrigatorio)
+GET  /api/v1/transfers                (as minhas — sender ve as que enviou, student as que recebeu)
+GET  /api/v1/transfers/:reference     (so sender/student donos ou ADMIN; 404 para os outros — anti-IDOR)
+```
+
+`Idempotency-Key` (UUID, gerado no cliente): retry com a mesma key + mesmo
+`quoteId` devolve a transferencia ja criada; mesma key com `quoteId` diferente
+→ `409 IDEMPOTENCY_KEY_CONFLICT`. A quote so pode ser consumida uma vez
+(update atomico `WHERE status='ACTIVE'`); a segunda tentativa dá
+`QUOTE_ALREADY_CONSUMED`.
+
+Ao criar, a transferencia avanca sozinha (modo SIMULATION, sem cobranca real)
+por `DRAFT → AWAITING_PAYMENT → PAYMENT_PROCESSING → PAID → PROCESSING →
+SENT_TO_PROVIDER`, com um `TransferEvent` append-only em cada passo.
+
+```
+POST /api/v1/dev/mock/transfers/:reference/advance   SENT_TO_PROVIDER -> DELIVERED
+```
+
+So responde quando `ENABLE_DEV_ENDPOINTS=true` (404 caso contrario) — nunca
+disponivel em producao (o `parseApiEnv` ja recusa arrancar assim).
+
 `amount` em EUR (string "100" ou "100,50"). Valida min/max
 (`TRANSFER_MIN/MAX_SOURCE_MINOR`). Quote expira em `QUOTE_TTL_SECONDS`
 (expiracao preguicosa no `GET`). Referencia publica `QTE-XXXX`. Montantes na
