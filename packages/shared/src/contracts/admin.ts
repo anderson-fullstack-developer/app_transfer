@@ -1,4 +1,5 @@
-import { TransferStatus, UserRole, UserStatus } from '../domain/enums.js';
+import { TransferStatus } from '../domain/enums.js';
+import type { UserRole, UserStatus } from '../domain/enums.js';
 
 /** Estados agrupados para os cards do dashboard (doc, seccao 21). */
 export const ADMIN_COMPLETED_STATUSES: readonly TransferStatus[] = [TransferStatus.DELIVERED];

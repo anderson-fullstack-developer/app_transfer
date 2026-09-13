@@ -45,7 +45,7 @@ Detalhe em [`docs/architecture.md`](docs/architecture.md).
 | Backend     | Node.js, NestJS 11, TypeScript strict, REST, Swagger/OpenAPI, Prisma 6, PostgreSQL 16                  |
 | Infra local | Docker Compose (PostgreSQL + Redis)                                                                    |
 | Monorepo    | pnpm workspaces + Turborepo                                                                            |
-| Testes      | Vitest (pacotes/web), Jest (API), Playwright (E2E)                                                     |
+| Testes      | Vitest (pacotes/web), Jest (API: unitários + integração/E2E com Supertest)                             |
 | Qualidade   | ESLint 9, Prettier, TypeScript strict, CI (GitHub Actions)                                             |
 
 ## Pré-requisitos
@@ -75,6 +75,35 @@ pnpm dev                # web + api em paralelo
 > No Windows, pára o `pnpm dev` antes de correr `pnpm db:migrate` / `db:generate`
 > — o processo da API mantém o motor do Prisma aberto e o `generate` falha com `EPERM`.
 
+### Testes
+
+```bash
+pnpm test          # unitários (packages/shared, packages/config) + Jest (apps/api)
+pnpm test:e2e       # integração/E2E (apps/api/test/*.e2e-spec.ts), contra uma BD REAL
+```
+
+Os testes de integração fazem pedidos HTTP reais (Supertest) contra a app NestJS
+completa — guards, pipes e tudo — e apagam a base de dados toda antes de cada
+ficheiro (`TRUNCATE ... CASCADE`). Por isso **precisam de uma BD dedicada**,
+nunca a de desenvolvimento:
+
+```env
+# .env — um branch Neon a parte (Create Branch → "Branch schema only" →
+# Auto-delete "Never"), ou outra BD Docker/Postgres local.
+TEST_DATABASE_URL=postgresql://...
+```
+
+Depois de criar essa BD, aplica as migrations lá (uma vez, ou sempre que o
+schema mudar):
+
+```bash
+DATABASE_URL=<TEST_DATABASE_URL> DIRECT_URL=<ligacao direta ao mesmo branch> \
+  pnpm --filter @app/database exec prisma migrate deploy
+```
+
+Sem `TEST_DATABASE_URL` definida, `pnpm test:e2e` recusa-se a arrancar (em vez
+de correr contra `DATABASE_URL` por engano).
+
 ### Contas de exemplo (só desenvolvimento)
 
 | Email                  | Password        | Papel                          |
@@ -97,8 +126,8 @@ pnpm dev                # web + api em paralelo
 | `pnpm build`                          | Build de todos os pacotes/apps (Turborepo) |
 | `pnpm lint`                           | ESLint em todo o monorepo                  |
 | `pnpm typecheck`                      | `tsc --noEmit` em todo o monorepo          |
-| `pnpm test`                           | Testes unitários e de integração           |
-| `pnpm test:e2e`                       | Testes end-to-end (Playwright)             |
+| `pnpm test`                           | Testes unitários                                                  |
+| `pnpm test:e2e`                       | Integração/E2E da API (precisa de `TEST_DATABASE_URL`, ver acima) |
 | `pnpm format`                         | Formata com Prettier                       |
 | `pnpm db:migrate`                     | `prisma migrate dev`                       |
 | `pnpm db:seed`                        | Popula a base de dados de desenvolvimento  |
@@ -137,6 +166,7 @@ módulos e as regras de dependência entre camadas.
 | 8     | Beneficiários favoritos                                              | ✅     |
 | 9     | Notificações in-app                                                  | ✅     |
 | 10    | Admin (dashboard, utilizadores, transferências, filtros)             | ✅     |
-| 11–13 | Testes mais profundos, revisão de segurança, docs/CI                 | ⏳     |
+| 11    | Testes de integração/E2E (register→login→quote→transfer→DELIVERED, IDOR, idempotência, RBAC) | ✅     |
+| 12–13 | Revisão de segurança, docs/CI                                        | ⏳     |
 
 Ordem detalhada em `documentatio.md` (secções 41–42).
