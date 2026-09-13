@@ -52,7 +52,13 @@ export class AdminService {
     const users = await this.prisma.user.findMany({
       orderBy: { createdAt: 'desc' },
       take: LIST_LIMIT,
-      include: {
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        status: true,
+        emailVerified: true,
+        createdAt: true,
         studentProfile: { select: { displayName: true, username: true } },
         senderProfile: { select: { displayName: true } },
       },
