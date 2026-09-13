@@ -13,6 +13,7 @@ import { QuotesModule } from './quotes/quotes.module';
 import { TransfersModule } from './transfers/transfers.module';
 import { DevModule } from './dev/dev.module';
 import { FavoritesModule } from './favorites/favorites.module';
+import { NotificationsModule } from './notifications/notifications.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 import { AllExceptionsFilter } from './common/http/all-exceptions.filter';
@@ -42,6 +43,7 @@ import { HealthModule } from './health/health.module';
     TransfersModule,
     DevModule,
     FavoritesModule,
+    NotificationsModule,
     HealthModule,
   ],
   providers: [

@@ -4,6 +4,7 @@ import {
   AppError,
   ErrorCode,
   UserRole,
+  formatMoney,
   generateTransferReference,
   type CreateTransferInput,
   type TransferListItem,
@@ -11,6 +12,7 @@ import {
 } from '@app/shared';
 import { PrismaService } from '../database/prisma.service';
 import { AuditService } from '../audit/audit.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { PAYMENT_PROVIDER, type PaymentProvider } from '../payments/payment-provider.interface';
 import { TransferStateService } from './transfer-state.service';
 import { IdempotencyService } from './idempotency.service';
@@ -30,6 +32,7 @@ export class TransfersService {
     private readonly state: TransferStateService,
     private readonly idempotency: IdempotencyService,
     private readonly audit: AuditService,
+    private readonly notifications: NotificationsService,
     @Inject(PAYMENT_PROVIDER) private readonly provider: PaymentProvider,
   ) {}
 
@@ -193,7 +196,13 @@ export class TransfersService {
 
   /** So para desenvolvimento: avanca SENT_TO_PROVIDER -> DELIVERED. */
   async devAdvance(reference: string): Promise<TransferView> {
-    const transfer = await this.prisma.transfer.findUnique({ where: { reference } });
+    const transfer = await this.prisma.transfer.findUnique({
+      where: { reference },
+      include: {
+        sender: { select: { userId: true, displayName: true } },
+        student: { select: { userId: true, displayName: true, username: true } },
+      },
+    });
     if (!transfer) {
       throw new AppError(ErrorCode.TRANSFER_NOT_FOUND, 'Transferencia nao encontrada.');
     }
@@ -212,6 +221,24 @@ export class TransfersService {
       entityId: transfer.id,
       metadata: { from: 'SENT_TO_PROVIDER', to: 'DELIVERED', dev: true },
     });
+
+    const destinationFormatted = formatMoney(transfer.destinationAmountMinor, 'MAD');
+    const sourceFormatted = formatMoney(transfer.sourceAmountMinor, 'EUR');
+    await this.notifications.create(
+      transfer.student.userId,
+      'TRANSFER_DELIVERED',
+      'Recebeste uma transferência',
+      `${transfer.sender.displayName} enviou-te ${destinationFormatted} (${transfer.reference}).`,
+      { transferReference: transfer.reference },
+    );
+    await this.notifications.create(
+      transfer.sender.userId,
+      'TRANSFER_DELIVERED',
+      'Transferência entregue',
+      `${sourceFormatted} para @${transfer.student.username} foram entregues a ${transfer.student.displayName}.`,
+      { transferReference: transfer.reference },
+    );
+
     return this.buildView(reference, null, UserRole.ADMIN);
   }
 

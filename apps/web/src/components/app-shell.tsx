@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Button } from '@app/ui/components';
 import { useAuth } from '@/lib/auth-context';
+import { NotificationBell } from './notification-bell';
 
 /** Cabecalho comum das paginas autenticadas. */
 export function AppShell({ children }: { children: React.ReactNode }): React.JSX.Element {
@@ -22,7 +23,8 @@ export function AppShell({ children }: { children: React.ReactNode }): React.JSX
             </span>
             app-transfer
           </Link>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <NotificationBell />
             <span
               className="grid h-8 w-8 place-items-center rounded-full bg-muted text-xs font-semibold"
               title={user?.email}

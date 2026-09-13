@@ -136,12 +136,18 @@ POST   /api/v1/favorites             { studentUsername, alias? } — 409 se ja e
 DELETE /api/v1/favorites/:id         204; so o dono pode remover
 ```
 
-### Notifications (Fase 9)
+### Notifications — implementado (Fase 9)
 
 ```
-GET    /api/v1/notifications
-PATCH  /api/v1/notifications/:id/read
+GET    /api/v1/notifications           { items: NotificationView[], unreadCount }
+PATCH  /api/v1/notifications/:id/read  204; so o dono
+PATCH  /api/v1/notifications/read-all  204; marca todas como lidas
 ```
+
+Canal `IN_APP`. Criadas automaticamente quando uma `Transfer` chega a
+`DELIVERED`: uma para o estudante ("Recebeste..."), outra para o sender
+("...foi entregue"). `metadata.transferReference` liga de volta a
+`/transfers/:reference` no frontend.
 
 ### Admin (Fase 10) — RBAC obrigatório
 

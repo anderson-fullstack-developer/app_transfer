@@ -124,16 +124,17 @@ módulos e as regras de dependência entre camadas.
 
 ## Estado de implementação
 
-| Fase | Descrição                                                            | Estado |
-| ---- | -------------------------------------------------------------------- | ------ |
-| 1    | Monorepo + configuração + base partilhada                            | ✅     |
-| 2    | Prisma schema + migrations + seeds                                   | ✅     |
-| 3    | Auth + roles + segurança base (login com Google: opcional, pendente) | ✅     |
-| 4    | Onboarding do estudante + `@username`                                | ✅     |
-| 5    | Pesquisa de estudante pelo remetente + onboarding do sender          | ✅     |
-| 6    | Cotação (Quote) + abstração de PaymentProvider + MockPaymentProvider | ✅     |
-| 7    | Transfer + state machine + idempotência                              | ✅     |
-| 8    | Beneficiários favoritos                                              | ✅     |
-| 9–13 | Notificações, admin, testes, docs, CI                                | ⏳     |
+| Fase  | Descrição                                                            | Estado |
+| ----- | -------------------------------------------------------------------- | ------ |
+| 1     | Monorepo + configuração + base partilhada                            | ✅     |
+| 2     | Prisma schema + migrations + seeds                                   | ✅     |
+| 3     | Auth + roles + segurança base (login com Google: opcional, pendente) | ✅     |
+| 4     | Onboarding do estudante + `@username`                                | ✅     |
+| 5     | Pesquisa de estudante pelo remetente + onboarding do sender          | ✅     |
+| 6     | Cotação (Quote) + abstração de PaymentProvider + MockPaymentProvider | ✅     |
+| 7     | Transfer + state machine + idempotência                              | ✅     |
+| 8     | Beneficiários favoritos                                              | ✅     |
+| 9     | Notificações in-app                                                  | ✅     |
+| 10–13 | Admin, testes, docs, CI                                              | ⏳     |
 
 Ordem detalhada em `documentatio.md` (secções 41–42).
