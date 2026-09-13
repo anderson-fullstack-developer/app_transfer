@@ -14,6 +14,7 @@ import { TransfersModule } from './transfers/transfers.module';
 import { DevModule } from './dev/dev.module';
 import { FavoritesModule } from './favorites/favorites.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { AdminModule } from './admin/admin.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 import { AllExceptionsFilter } from './common/http/all-exceptions.filter';
@@ -44,6 +45,7 @@ import { HealthModule } from './health/health.module';
     DevModule,
     FavoritesModule,
     NotificationsModule,
+    AdminModule,
     HealthModule,
   ],
   providers: [

@@ -222,9 +222,19 @@ function Dashboard(): React.JSX.Element {
       {user?.role === 'STUDENT' ? (
         <StudentDashboard />
       ) : user?.role === 'ADMIN' ? (
-        <Card>
-          <p className="font-medium">Painel de administração</p>
-          <p className="text-sm text-muted-foreground">Disponível numa fase posterior.</p>
+        <Card className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="font-medium">Painel de administração</p>
+            <p className="text-sm text-muted-foreground">
+              Estatísticas, utilizadores e transferências de toda a plataforma.
+            </p>
+          </div>
+          <Link
+            href="/admin"
+            className="inline-flex h-10 items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground"
+          >
+            Abrir painel
+          </Link>
         </Card>
       ) : (
         <SenderDashboard />

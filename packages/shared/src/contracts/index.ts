@@ -5,3 +5,4 @@ export * from './quote.js';
 export * from './transfer.js';
 export * from './favorite.js';
 export * from './notification.js';
+export * from './admin.js';
