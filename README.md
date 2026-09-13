@@ -121,6 +121,7 @@ módulos e as regras de dependência entre camadas.
 | [`docs/security.md`](docs/security.md)         | Autenticação, RBAC, rate limiting, IDOR, decisões de segurança |
 | [`docs/privacy.md`](docs/privacy.md)           | Data minimization, dados pessoais, notas GDPR                  |
 | [`docs/api.md`](docs/api.md)                   | Endpoints, formato de erro, exemplos                           |
+| [`docs/deployment.md`](docs/deployment.md)     | Deploy: Vercel (web) + Railway (api) + Neon (BD)               |
 
 ## Estado de implementação
 

@@ -31,7 +31,11 @@ export const apiEnvSchema = z.object({
   DATABASE_URL: z.string().url(),
   /** Ligacao direta (sem pooler) para migrations. Opcional; default = DATABASE_URL. */
   DIRECT_URL: z.string().url().optional(),
-  REDIS_URL: z.string().url(),
+  /**
+   * Opcional ate haver uso real (rate limiting distribuido / BullMQ) — doc,
+   * seccao 3: "nao adicionar infraestrutura que ainda nao tenha uso real".
+   */
+  REDIS_URL: z.string().url().optional(),
 
   JWT_ACCESS_SECRET: z.string().min(16, 'JWT_ACCESS_SECRET tem de ter pelo menos 16 caracteres'),
   JWT_REFRESH_SECRET: z.string().min(16, 'JWT_REFRESH_SECRET tem de ter pelo menos 16 caracteres'),

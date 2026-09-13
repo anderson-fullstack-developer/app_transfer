@@ -8,7 +8,10 @@ function baseOptions(config: AppConfigService): CookieOptions {
   return {
     httpOnly: true,
     secure: config.cookie.secure,
-    sameSite: 'lax',
+    // Frontend (Vercel) e API (Railway) vivem em dominios diferentes em
+    // producao -> cookie tem de ser SameSite=None (exige Secure=true). Em
+    // dev, localhost:3000 -> localhost:4000 e "same-site" e Lax chega.
+    sameSite: config.cookie.secure ? 'none' : 'lax',
     path: REFRESH_COOKIE_PATH,
     domain: config.cookie.domain || undefined,
   };

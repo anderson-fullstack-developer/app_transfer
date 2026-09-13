@@ -54,11 +54,12 @@ async function bootstrap(): Promise<void> {
     swaggerOptions: { persistAuthorization: true },
   });
 
-  await app.listen(config.port);
-  logger.log(
-    `API a correr em http://localhost:${config.port}/api/v1 (modo ${config.raw.APP_MODE})`,
-  );
-  logger.log(`Swagger em http://localhost:${config.port}/docs`);
+  // Plataformas como Railway/Render atribuem a porta dinamicamente via $PORT;
+  // localmente usamos a de API_PORT (.env).
+  const port = process.env.PORT ? Number(process.env.PORT) : config.port;
+  await app.listen(port);
+  logger.log(`API a correr na porta ${port} (modo ${config.raw.APP_MODE})`);
+  logger.log(`Swagger em /docs`);
 }
 
 void bootstrap();
