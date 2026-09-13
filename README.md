@@ -136,6 +136,7 @@ módulos e as regras de dependência entre camadas.
 | 7     | Transfer + state machine + idempotência                              | ✅     |
 | 8     | Beneficiários favoritos                                              | ✅     |
 | 9     | Notificações in-app                                                  | ✅     |
-| 10–13 | Admin, testes, docs, CI                                              | ⏳     |
+| 10    | Admin (dashboard, utilizadores, transferências, filtros)             | ✅     |
+| 11–13 | Testes mais profundos, revisão de segurança, docs/CI                 | ⏳     |
 
 Ordem detalhada em `documentatio.md` (secções 41–42).
