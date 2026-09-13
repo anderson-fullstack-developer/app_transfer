@@ -15,8 +15,10 @@ Decisões e mecanismos (secção 23 da doc). Atualizar à medida que se implemen
 - Proteção contra brute force: rate limiting no `/auth/login` + backoff.
 - Tokens:
   - access token curto (`JWT_ACCESS_TTL`, default 15 min);
-  - refresh token longo, rotativo, guardado em cookie `httpOnly` + `secure`
-    (produção) + `sameSite=lax`;
+  - refresh token longo, rotativo, guardado em cookie `httpOnly`;
+    `sameSite=lax` em desenvolvimento (mesmo site), `sameSite=none` + `secure`
+    em produção (frontend e API em domínios diferentes — Vercel + Railway —
+    exigem isto para o cookie ser enviado entre eles);
   - **nunca** guardar access tokens sensíveis em `localStorage`.
 - Verificação de email obrigatória para ações sensíveis.
 
@@ -61,3 +63,13 @@ que o requester é o sender, o student, ou um admin autorizado.
 
 `ENABLE_DEV_ENDPOINTS` tem de ser `false` em produção. `parseApiEnv` recusa
 `NODE_ENV=production` com dev endpoints ligados.
+
+## Revisão de segurança (Fase 12)
+
+Auditoria manual de todo o backend contra esta checklist, sem findings de
+severidade alta/média. Confirmado nomeadamente: nenhum `data: {...body}`
+(mass assignment) em todo o código, JWT sem dados sensíveis no payload,
+`JwtStrategy` revalida sempre o utilizador na BD (uma conta suspensa perde
+acesso de imediato, mesmo com access token ainda válido), e o padrão IDOR
+(404 em vez de 403 para não-donos) é consistente em todos os módulos
+(quotes, transfers, favorites, notifications, admin).

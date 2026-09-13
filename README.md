@@ -104,6 +104,21 @@ DATABASE_URL=<TEST_DATABASE_URL> DIRECT_URL=<ligacao direta ao mesmo branch> \
 Sem `TEST_DATABASE_URL` definida, `pnpm test:e2e` recusa-se a arrancar (em vez
 de correr contra `DATABASE_URL` por engano).
 
+## CI
+
+`.github/workflows/ci.yml` corre em cada push/PR: lint → typecheck → testes
+unitários → migrations na BD de testes → testes de integração/E2E → build.
+Nunca faz deploy (isso é sempre manual/explícito — Vercel e Railway já tratam
+disso à parte, ver [`docs/deployment.md`](docs/deployment.md)).
+
+Precisa de dois **secrets** no repositório GitHub (Settings → Secrets and
+variables → Actions), com os mesmos valores do branch Neon de testes:
+
+```text
+TEST_DATABASE_URL
+TEST_DIRECT_URL
+```
+
 ### Contas de exemplo (só desenvolvimento)
 
 | Email                  | Password        | Papel                          |
@@ -167,6 +182,9 @@ módulos e as regras de dependência entre camadas.
 | 9     | Notificações in-app                                                  | ✅     |
 | 10    | Admin (dashboard, utilizadores, transferências, filtros)             | ✅     |
 | 11    | Testes de integração/E2E (register→login→quote→transfer→DELIVERED, IDOR, idempotência, RBAC) | ✅     |
-| 12–13 | Revisão de segurança, docs/CI                                        | ⏳     |
+| 12    | Revisão de segurança (RBAC, IDOR, mass assignment, tokens, headers)  | ✅     |
+| 13    | CI (GitHub Actions: lint/typecheck/testes/build) + docs              | ✅     |
 
-Ordem detalhada em `documentatio.md` (secções 41–42).
+Ordem detalhada em `documentatio.md` (secções 41–42). Todas as 13 fases do
+plano original estão concluídas — próximos passos são melhorias contínuas,
+não itens em falta do MVP.

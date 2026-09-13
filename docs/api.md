@@ -120,14 +120,6 @@ disponivel em producao (o `parseApiEnv` ja recusa arrancar assim).
 (expiracao preguicosa no `GET`). Referencia publica `QTE-XXXX`. Montantes na
 resposta em minor units como string (BigInt). audit `QUOTE_CREATED`.
 
-### Transfers (Fase 7)
-
-```
-POST /api/v1/transfers          (header: Idempotency-Key)
-GET  /api/v1/transfers
-GET  /api/v1/transfers/:reference
-```
-
 ### Favorites — implementado (Fase 8)
 
 ```
@@ -158,14 +150,20 @@ GET /api/v1/admin/transfers/:reference
 GET /api/v1/admin/stats
 ```
 
-### Webhooks (Fase 6+)
+### Webhooks — não implementado
+
+`POST /api/v1/webhooks/payment/:provider` está previsto na arquitetura
+(doc, secção 15) para quando um provider real (Wise/Nium/Thunes) substituir
+o `MockPaymentProvider`, mas **não existe código nenhum ainda** — o modo
+SIMULATION não precisa de receber callbacks assíncronos de um parceiro
+financeiro.
+
+### Dev — implementado, só fora de produção
 
 ```
-POST /api/v1/webhooks/payment/:provider
+POST /api/v1/dev/mock/transfers/:reference/advance   SENT_TO_PROVIDER -> DELIVERED
 ```
 
-### Dev (apenas com ENABLE_DEV_ENDPOINTS=true)
-
-```
-POST /api/v1/dev/mock/transfers/:id/advance
-```
+Só responde com `ENABLE_DEV_ENDPOINTS=true` (404 caso contrário); nunca
+disponível em produção — `parseApiEnv` recusa arrancar com
+`NODE_ENV=production` e esta variável a `true`.
